@@ -33,7 +33,7 @@ applications:
       server: https://kubernetes.default.svc
       namespace: monitoring
     syncPolicy:
-      automated: {}
+      automated:
         prune: true
         selfHeal: true
 
@@ -51,7 +51,7 @@ applications:
       server: https://kubernetes.default.svc
       namespace: argocd
     syncPolicy:
-      automated: {}
+      automated:
         prune: true
         selfHeal: true
 
@@ -68,8 +68,8 @@ applications:
     destination:
       server: https://kubernetes.default.svc
       namespace: argocd
-    syncPolicy: {}
-      automated: {}
+    syncPolicy:
+      automated:
         prune: true
         selfHeal: true
       #syncOptions:
