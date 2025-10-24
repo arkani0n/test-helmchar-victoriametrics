@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: spam2000
+  name: spam2000-deployment
+spec:
+  replicas: {{ .Values.spam2000.replicaCount }}
+  selector:
+    matchLabels:
+      app: spam2000
+  template:
+    metadata:
+      labels:
+        app: spam2000
+    spec:
+      containers:
+        - name: spam2000
+          image: {{ .Values.spam2000.image }}
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          securityContext:
+            runAsUser: 0 # root
+          resources:
+            limits:
+              cpu: 20m
+              memory: 200Mi
+      dnsPolicy: ClusterFirst
+
+

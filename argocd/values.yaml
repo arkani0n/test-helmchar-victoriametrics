@@ -1,0 +1,75 @@
+# values.yaml
+server:
+  config:
+    repositories: |
+      - url: https://github.com/arkani0n/test-helmchar-victoriametrics
+        type: git
+        name: my-repo
+
+  additionalApplications:
+    - name: spam2000
+      namespace: default
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      project: default
+      source:
+        repoURL: https://github.com/arkani0n/test-helmchar-victoriametrics
+        targetRevision: HEAD
+        path: charts/
+        helm:
+          valueFiles:
+            - values.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+
+configs:
+  # Repository credentials (if private repo)
+  credentialTemplates:
+    github-creds:
+      url: https://github.com/arkani0n
+      password: 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  # Or use githubAppPrivateKey
+      username: not-used
+  repositories:
+    my-repo:
+      url: https://github.com/arkani0n/test-helmchar-victoriametrics
+      type: git
+      name: my-repo
+  # Define your applications
+  cm:
+    application.instanceLabelKey: argocd.argoproj.io/instance
+
+# Pre-define applications using applicationSet or inline
+applications:
+  - name: my-app
+    namespace: argocd
+    project: default
+    source:
+      repoURL: https://github.com/arkani0n/test-helmchar-victoriametrics
+      targetRevision: HEAD
+      path: charts/  # Path to your Helm chart
+      helm:
+        valueFiles:
+          - values.yaml
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: default
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+        allowEmpty: false
+      syncOptions:
+        - CreateNamespace=true
+      retry:
+        limit: 5
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 3m

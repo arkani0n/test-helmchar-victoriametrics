@@ -1,0 +1,136 @@
+
+defaultDashboardsEnabled: true
+grafana:
+  enabled: true
+
+  adminUser: "admin"
+  adminPassword: "admin"
+
+  forceDeployDatasource: false
+  ingress:
+    enabled: false
+  datasources:
+    datasources.yaml: # that works
+      apiVersion: 1
+      datasources:
+        - name: victoriametrics
+          type: prometheus
+          orgId: 1
+          url: http://vmsingle-vmks.monitoring.svc.cluster.local:8428
+          access: proxy
+          isDefault: false
+          updateIntervalSeconds: 10
+          editable: true
+
+  sidecar:
+    dashboards:
+      enabled: true
+
+      # label that the configmaps with dashboards are marked with (can be templated)
+      label: grafana-dashboard
+      folder: /tmp/dashboards
+      searchNamespace:
+        - default
+        - monitoring
+      provider:
+            # name of the provider, should be unique
+            name: sidecarProvider
+            # orgid as configured in grafana
+            orgid: 1
+            # folder in which the dashboards should be imported in grafana
+            folder: 'default'
+            # type of the provider
+            type: file
+            # disableDelete to activate a import-only behaviour
+            disableDelete: false
+            # allow updating provisioned dashboards from the UI
+            allowUiUpdates: true
+      datasources:
+        enabled: false
+  vmScrape:
+    enabled: true
+    spec:
+      endpoints:
+        - port: '{{ .Values.grafana.service.portName }}'
+      selector:
+        matchLabels:
+          app.kubernetes.io/name: '{{ include "grafana.name" .Subcharts.grafana }}'
+
+# ---
+nameOverride: vmks
+
+# VMSingle for metrics storage
+vmsingle:
+  enabled: true
+  spec:
+    retentionPeriod: "14d"
+  persistentVolume:
+    enabled: true
+    size: 10Gi
+
+# VMAgent configuration
+vmagent:
+  enabled: true
+  spec:
+    remoteWrite:
+      - url: "http://vmsingle-vmks.monitoring.svc.cluster.local:8428/api/v1/write"
+        tlsConfig:
+          insecureSkipVerify: true
+    selectAllByDefault: true  # Automatically discover all VMServiceScrapes
+
+# Victoria Metrics Operator
+victoria-metrics-operator:
+  enabled: true
+  admissionWebhooks:
+    certManager:
+      enabled: false
+
+# Default dashboards
+
+
+# fixing 509x issue with no valid cert -> cannot scrape issue from vm agent
+kubeControllerManager: # doesn't work
+  service:
+    port: 10252
+    targetPort: 10252
+  vmScrape:
+    spec:
+      endpoints:
+        - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          port: http-metrics
+          scheme: http
+
+kubeEtcd:
+  service:
+    port: 2381
+    targetPort: 2381
+  vmScrape:
+    spec:
+      endpoints:
+        - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          port: http-metrics
+          scheme: http
+
+
+kubeProxy:
+  enabled: true
+  vmScrape:
+    spec:
+      endpoints:
+        - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          port: http-metrics
+          scheme: http
+
+
+kubeScheduler: # doesn't work
+  service:
+    port: 10251
+    targetPort: 10251
+  vmScrape:
+    spec:
+      endpoints:
+        - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          port: http-metrics
+          scheme: http
+          tlsConfig:
+            insecureSkipVerify: true

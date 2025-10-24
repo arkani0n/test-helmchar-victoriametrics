@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spam2000-service
+  labels:
+    app: spam2000
+  namespace: default
+spec:
+  ports:
+    - port: 3000
+      name: {{ .Values.spam2000.service.portName }}
+      targetPort: {{ .Values.spam2000.service.targetPort }}
+  selector:
+    app: spam2000
+  type: ClusterIP
