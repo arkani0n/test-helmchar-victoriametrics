@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: spam2000
-  name: spam2000-deployment
+  name: spam2000
 spec:
   replicas: {{ .Values.spam2000.replicaCount }}
   selector:
@@ -22,9 +22,27 @@ spec:
               protocol: TCP
           securityContext:
             runAsUser: 0 # root
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+            timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            failureThreshold: 3
+            timeoutSeconds: 2
           resources:
             limits:
-              cpu: 20m
+              cpu: 100m
               memory: 200Mi
       dnsPolicy: ClusterFirst
 
