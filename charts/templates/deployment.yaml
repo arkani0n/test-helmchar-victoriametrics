@@ -27,7 +27,7 @@ spec:
               path: /health
               port: 3000
               scheme: HTTP
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 3
             timeoutSeconds: 2
@@ -36,14 +36,13 @@ spec:
               path: /health
               port: 3000
               scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 2
+            initialDelaySeconds: 80
+            periodSeconds: 5
             failureThreshold: 3
             timeoutSeconds: 2
           resources:
             limits:
               cpu: 100m
               memory: 200Mi
-      dnsPolicy: ClusterFirst
 
 
