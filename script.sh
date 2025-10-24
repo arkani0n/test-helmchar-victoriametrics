@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 minikube start --container-runtime=containerd --extra-config=scheduler.bind-address=0.0.0.0 --extra-config=controller-manager.bind-address=0.0.0.0 --extra-config=etcd.listen-metrics-urls=http://0.0.0.0:2381 --kubernetes-version="v1.27.0"
-#install argo
+
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
 

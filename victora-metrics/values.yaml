@@ -1,5 +1,6 @@
-
+nameOverride: vmks
 defaultDashboardsEnabled: true
+
 grafana:
   enabled: true
 
@@ -10,7 +11,7 @@ grafana:
   ingress:
     enabled: false
   datasources:
-    datasources.yaml: # that works
+    datasources.yaml:
       apiVersion: 1
       datasources:
         - name: victoriametrics
@@ -25,25 +26,17 @@ grafana:
   sidecar:
     dashboards:
       enabled: true
-
-      # label that the configmaps with dashboards are marked with (can be templated)
       label: grafana-dashboard
       folder: /tmp/dashboards
       searchNamespace:
         - default
         - monitoring
       provider:
-            # name of the provider, should be unique
             name: sidecarProvider
-            # orgid as configured in grafana
             orgid: 1
-            # folder in which the dashboards should be imported in grafana
             folder: 'default'
-            # type of the provider
             type: file
-            # disableDelete to activate a import-only behaviour
             disableDelete: false
-            # allow updating provisioned dashboards from the UI
             allowUiUpdates: true
       datasources:
         enabled: false
@@ -56,8 +49,7 @@ grafana:
         matchLabels:
           app.kubernetes.io/name: '{{ include "grafana.name" .Subcharts.grafana }}'
 
-# ---
-nameOverride: vmks
+
 
 # VMSingle for metrics storage
 vmsingle:
@@ -87,8 +79,6 @@ victoria-metrics-operator:
 
 # Default dashboards
 
-
-# fixing 509x issue with no valid cert -> cannot scrape issue from vm agent
 kubeControllerManager: # doesn't work
   service:
     port: 10252

@@ -1,5 +1,3 @@
-### spam2000 ###
-
 spam2000:
   replicaCount: 1
   image: andriiuni/spam2000:1.1394.355

@@ -4,9 +4,7 @@ server:
       - url: https://github.com/arkani0n/test-helmchar-victoriametrics
         type: git
         name: my-repo
-
 configs:
-
   repositories:
     my-repo:
       url: https://github.com/arkani0n/test-helmchar-victoriametrics.git
