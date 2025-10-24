@@ -32,7 +32,10 @@ applications:
     destination:
       server: https://kubernetes.default.svc
       namespace: monitoring
-    syncPolicy: {}
+    syncPolicy:
+      automated: {}
+        prune: true
+        selfHeal: true
 
   argocd:
     namespace: argocd
@@ -47,7 +50,10 @@ applications:
     destination:
       server: https://kubernetes.default.svc
       namespace: argocd
-    syncPolicy: {}
+    syncPolicy:
+      automated: {}
+        prune: true
+        selfHeal: true
 
   argocd-apps:
     namespace: argocd
@@ -63,8 +69,8 @@ applications:
       server: https://kubernetes.default.svc
       namespace: argocd
     syncPolicy: {}
-      #automated: {}
-#        prune: true
-#        selfHeal: true
+      automated: {}
+        prune: true
+        selfHeal: true
       #syncOptions:
       #  - CreateNamespace=true
