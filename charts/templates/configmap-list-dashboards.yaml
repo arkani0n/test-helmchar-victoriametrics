@@ -430,7 +430,7 @@ items:
                 "editorMode": "code",
                 "expr": "irate(name_gauge{})",
                 "format": "time_series",
-                "legendFormat": "{{name}}",
+                "legendFormat":  "{{ "{{" }} name {{ "}}" }}",
                 "range": true,
                 "refId": "A"
               }
@@ -577,7 +577,7 @@ items:
                   "uid": "PABDA7AB1AD2A1489"
                 },
                 "expr": "ordered_histogram_bucket{name=\"$bucketName\"}[1m]",
-                "legendFormat": "le - {{le}}",
+                "legendFormat": "le - {{ "{{" }}le{{ "}}" }}",
                 "refId": "A"
               }
             ],
