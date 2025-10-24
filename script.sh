@@ -1,41 +1,20 @@
-# install victoria metrics
-helm repo add vm https://victoriametrics.github.io/helm-charts/
-helm repo update
-
-# list versions
-#helm search repo vm/victoria-metrics-k8s-stack -l
-
-helm install vmks vm/victoria-metrics-k8s-stack -f values.yaml -n monitoring
-#             ^ chart name
-
-
-## Recommended way for minikube:
-minikube start --container-runtime=containerd --extra-config=scheduler.bind-address=0.0.0.0 --extra-config=controller-manager.bind-address=0.0.0.0 --extra-config=etcd.listen-metrics-urls=http://0.0.0.0:2381
-helm install vmks vm/victoria-metrics-k8s-stack -f values.yaml -n monitoring
-
-# my chart
-# Validate the chart
-helm lint .
-
-# Test template rendering (see what will be created)
-helm template my-app . -f values.yaml
-
-# Dry run to see if it will work with the cluster
-helm install my-app .  -n default
-
-
-# Add the ArgoCD Helm repository
+#!/usr/bin/bash
+minikube start --container-runtime=containerd --extra-config=scheduler.bind-address=0.0.0.0 --extra-config=controller-manager.bind-address=0.0.0.0 --extra-config=etcd.listen-metrics-urls=http://0.0.0.0:2381 --kubernetes-version="v1.27.0"
+#install argo
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
 
-# Create namespace for ArgoCD
-kubectl create namespace argocd
+kubectl create ns argocd
+kubectl create ns monitoring
+helm install argocd argo/argo-cd --version 9.0.4 -f argocd/values.yaml -n argocd
 
-# Install ArgoCD
-helm install argocd argo/argo-cd -n argocd
+# If apps applied before argocd server ready, victoria metrics app having issue "Failed to load target state"
+argo_cd_rediness="0"
+while [  $argo_cd_rediness != "1/1" ]; do
+  echo "ArgoCD server not ready, retry in 5s, output $argo_cd_rediness"
+  sleep 5
+  argo_cd_rediness="$(kubectl get pods -n argocd | grep argocd-server | awk '{printf $2}')"
+done
+echo "ArgoCD server ready, installing argo apps"
 
-# Port forward to access the UI
-kubectl port-forward svc/argocd-server -n argocd 8080:443
-
-# Get the initial admin password
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+helm install argocd-apps argo/argocd-apps --version 2.0.2 -f argocd-apps/values.yaml -n argocd
