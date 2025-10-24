@@ -1,0 +1,70 @@
+applications:
+  spam2000:
+    namespace: argocd
+    project: default
+    source:
+      repoURL: https://github.com/arkani0n/test-helmchar-victoriametrics.git
+      targetRevision: HEAD
+      path: charts/
+      helm:
+        valueFiles:
+          - values.yaml
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: default
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+
+  vmks:
+    namespace: argocd
+    project: default
+    source:
+      chart: victoria-metrics-k8s-stack
+      repoURL: https://victoriametrics.github.io/helm-charts/
+      targetRevision: 0.61.10
+      helm:
+        valueFiles:
+          - https://raw.githubusercontent.com/arkani0n/test-helmchar-victoriametrics/refs/heads/master/victora-metrics/values.yaml
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: monitoring
+    syncPolicy: {}
+
+  argocd:
+    namespace: argocd
+    project: default
+    source:
+      chart: argo-cd
+      repoURL: https://argoproj.github.io/argo-helm
+      targetRevision: 9.0.4
+      helm:
+        valueFiles:
+          - https://raw.githubusercontent.com/arkani0n/test-helmchar-victoriametrics/refs/heads/master/argocd/values.yaml
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: argocd
+    syncPolicy: {}
+
+  argocd-apps:
+    namespace: argocd
+    project: default
+    source:
+      chart: argocd-apps
+      repoURL: https://argoproj.github.io/argo-helm
+      targetRevision: 2.0.2
+      helm:
+        valueFiles:
+          - https://raw.githubusercontent.com/arkani0n/test-helmchar-victoriametrics/refs/heads/master/argocd-apps/values.yaml
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: argocd
+    syncPolicy: {}
+      #automated: {}
+#        prune: true
+#        selfHeal: true
+      #syncOptions:
+      #  - CreateNamespace=true
