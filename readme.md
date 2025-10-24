@@ -145,9 +145,10 @@ minikube delete
 
 ## Resources
 
-- [VictoriaMetrics Helm](https://docs.victoriametrics.com/)
-- [ArgoCD Helm](https://argo-cd.readthedocs.io/)
-- [Grafana Helm](https://grafana.com/docs/)
+- [VictoriaMetrics Helm](https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack)
+- [ArgoCD Helm](https://github.com/argoproj/argo-helm/tree/fix-argo-helm-3-18/charts/argo-cd)
+- [ArgoCD Apps Helm](https://github.com/argoproj/argo-helm/tree/fix-argo-helm-3-18/charts/argocd-apps)
+- [Grafana Helm](https://github.com/grafana/helm-charts/tree/main/charts/grafana)
 
 
 ## License
